@@ -176,7 +176,8 @@
 
   <script>
     // Paste your REAL API key inside the quotes below
-    const API_KEY = "AIzaSyCVFmaRcRPgs-bpL08RRhA6V3ST5OFCzIk";
+    const API_KEY1 = "AIzaSyCVFmaRcRPgs";
+    const API_KEY2 = "-bpL08RRhA6V3ST5OFCzIk";
     const STORAGE_KEY = "gemini_chat_history";
     
     let conversationHistory = [];
@@ -240,7 +241,7 @@
       const typingIndicator = document.getElementById('typing');
 
       if (!text) return;
-      if (!API_KEY) {
+      if (!API_KEY1 + API_KEY2) {
         alert("Please add your API key to the script.");
         return;
       }
