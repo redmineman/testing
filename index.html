@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gemini Chatbot (3.5 Flash)</title>
+  
+  <!-- Add Marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <!-- Add MathJax for LaTeX/Math rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <style>
     :root {
       --bg: #f3f4f6;
@@ -88,7 +103,17 @@
       padding: 0.75rem 1rem;
       border-radius: 12px;
       font-size: 0.95rem;
-      white-space: pre-wrap;
+      /* Removed white-space: pre-wrap; so Markdown lists format properly */
+      overflow-x: auto; /* Adds a scrollbar if math equations get too wide */
+    }
+
+    .message p {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+    
+    .message p:last-child {
+      margin-bottom: 0;
     }
 
     .user-message {
@@ -175,7 +200,6 @@
   </div>
 
   <script>
-    // Combine the split API keys into one variable
     const API_KEY1 = "AIzaSyAQ2-HfXks1";
     const API_KEY2 = "805nFT4Tx_esKmYvwrGt5S4";
     const API_KEY = API_KEY1 + API_KEY2;
@@ -226,13 +250,21 @@
       }
     }
 
+    // --- MODIFIED APPEND MESSAGE FUNCTION ---
     function appendMessage(sender, text) {
       const chatBox = document.getElementById('chat-box');
       const msgDiv = document.createElement('div');
       msgDiv.className = `message ${sender}-message`;
-      msgDiv.innerText = text;
+      
+      // Parse the text via Marked.js to handle bolding and formatting, output as innerHTML
+      msgDiv.innerHTML = marked.parse(text);
       chatBox.appendChild(msgDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Ask MathJax to process any LaTeX math equations inside the new message bubble
+      if (window.MathJax) {
+        MathJax.typesetPromise([msgDiv]).catch((err) => console.log(err.message));
+      }
     }
 
     async function sendMessage() {
@@ -243,7 +275,6 @@
 
       if (!text) return;
       
-      // Validation check fixed to use the combined key
       if (!API_KEY) {
         alert("Please add your API key to the script.");
         return;
